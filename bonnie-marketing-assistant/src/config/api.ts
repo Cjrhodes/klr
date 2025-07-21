@@ -7,9 +7,9 @@ export const API_BASE_URL = isDevelopment && isLocalhost
   : '/api';
 
 export const API_ENDPOINTS = {
-  STATUS: `${API_BASE_URL}/api/status`,
-  CONFIGURE: `${API_BASE_URL}/api/configure`,
-  AGENTS_STATUS: `${API_BASE_URL}/agents/status`,
+  STATUS: `${API_BASE_URL}/status`,
+  CONFIGURE: `${API_BASE_URL}/configure`,
+  AGENTS_STATUS: `${API_BASE_URL}/agents`,
   CONTENT_GENERATE: `${API_BASE_URL}/content/generate`,
   IMAGE_GENERATE: `${API_BASE_URL}/image/generate`,
   ANALYTICS: `${API_BASE_URL}/analytics/performance`,
