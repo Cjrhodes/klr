@@ -10,14 +10,11 @@
 ### 1. Push to GitHub
 
 ```bash
-# If not already done, create GitHub repository
-gh repo create MarketingAssistant --public --source=. --remote=origin --push
+# Repository is already set up at:
+# https://github.com/Cjrhodes/MarketManager
 
-# Or manually:
-# 1. Create new repository on GitHub named "MarketingAssistant"
-# 2. Then run:
-git remote add origin https://github.com/YOUR_USERNAME/MarketingAssistant.git
-git push -u origin main
+# Code has been pushed to main branch
+# Ready for Vercel deployment!
 ```
 
 ### 2. Deploy on Vercel
@@ -25,7 +22,7 @@ git push -u origin main
 1. **Connect Repository**
    - Go to [vercel.com](https://vercel.com)
    - Click "New Project"
-   - Import your GitHub repository "MarketingAssistant"
+   - Import your GitHub repository "MarketManager"
 
 2. **Configure Build Settings**
    - Framework Preset: `Other`
