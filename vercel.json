@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "main_simple.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "bonnie-marketing-assistant/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "bonnie-marketing-assistant/build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/main_simple.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/bonnie-marketing-assistant/build/$1"
+    }
+  ],
+  "env": {
+    "ANTHROPIC_API_KEY": "@anthropic_api_key",
+    "OPENAI_API_KEY": "@openai_api_key"
+  },
+  "functions": {
+    "main_simple.py": {
+      "maxDuration": 30
+    }
+  }
+}
