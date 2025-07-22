@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -58,9 +58,9 @@ const AgentMessageBanner: React.FC = () => {
     // Refresh every 5 minutes
     const interval = setInterval(loadAgentMessage, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [loadAgentMessage]);
 
-  const loadAgentMessage = async () => {
+  const loadAgentMessage = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -98,7 +98,7 @@ const AgentMessageBanner: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const generateAgentMessage = (agentData: any): string => {
     const timeOfDay = new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening';

@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { 
-  Card, 
-  CardContent, 
-  Typography, 
   Tab, 
   Tabs, 
   Box 
 } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
 import SalesTracker from './SalesTracker';
 import SocialMediaAnalytics from './SocialMediaAnalytics';
 import AIAssistant from './AIAssistant';

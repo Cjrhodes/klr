@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -6,7 +6,6 @@ import {
   TextField,
   Button,
   Box,
-  Grid,
   Chip,
   Alert,
   Snackbar,
@@ -17,7 +16,6 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Switch,
   FormControlLabel,
   Checkbox,
   List,
@@ -141,9 +139,9 @@ const APISettings: React.FC = () => {
 
   useEffect(() => {
     loadAPIStatus();
-  }, []);
+  }, [loadAPIStatus]);
 
-  const loadAPIStatus = async () => {
+  const loadAPIStatus = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.STATUS);
@@ -180,7 +178,7 @@ const APISettings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const handleConfigureService = (serviceName: string, category: string) => {
     setConfigDialog({ open: true, service: serviceName, category });
