@@ -137,10 +137,6 @@ const APISettings: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    loadAPIStatus();
-  }, [loadAPIStatus]);
-
   const loadAPIStatus = useCallback(async () => {
     try {
       setLoading(true);
@@ -179,6 +175,10 @@ const APISettings: React.FC = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    loadAPIStatus();
+  }, [loadAPIStatus]);
 
   const handleConfigureService = (serviceName: string, category: string) => {
     setConfigDialog({ open: true, service: serviceName, category });

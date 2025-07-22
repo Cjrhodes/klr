@@ -53,13 +53,6 @@ const AgentMessageBanner: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadAgentMessage();
-    // Refresh every 5 minutes
-    const interval = setInterval(loadAgentMessage, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [loadAgentMessage]);
-
   const loadAgentMessage = useCallback(async () => {
     try {
       setLoading(true);
@@ -99,6 +92,13 @@ const AgentMessageBanner: React.FC = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    loadAgentMessage();
+    // Refresh every 5 minutes
+    const interval = setInterval(loadAgentMessage, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [loadAgentMessage]);
 
   const generateAgentMessage = (agentData: any): string => {
     const timeOfDay = new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening';
