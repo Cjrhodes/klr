@@ -15,12 +15,11 @@ import {
   Instagram,
   Facebook,
   Twitter,
-  LinkedIn,
   TrendingUp,
   TrendingDown,
   Refresh,
 } from '@mui/icons-material';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts';
 
 interface SocialPlatform {
   name: string;

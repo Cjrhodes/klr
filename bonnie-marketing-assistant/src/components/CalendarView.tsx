@@ -44,7 +44,7 @@ interface ScheduledPost {
 const CalendarView: React.FC = () => {
   const [scheduledPosts, setScheduledPosts] = useState<ScheduledPost[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedDate] = useState<string>('');
+  // const [selectedDate] = useState<string>(''); // Will be used for future calendar interactions
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
   // Mock data for demonstration
