@@ -59,10 +59,11 @@ interface APIConfiguration {
 }
 
 // Move serviceCategories outside the component to prevent unnecessary re-renders
+// Use icon names instead of JSX elements to avoid dependency issues
 const serviceCategories = {
   ai_services: {
     title: 'AI Services',
-    icon: <CloudIcon />,
+    iconName: 'CloudIcon',
     color: '#8b5cf6',
     services: {
       anthropic: 'Claude AI for content generation',
@@ -71,7 +72,7 @@ const serviceCategories = {
   },
   social_media: {
     title: 'Social Media',
-    icon: <ShareIcon />,
+    iconName: 'ShareIcon',
     color: '#f97316',
     services: {
       instagram: 'Instagram Business API',
@@ -84,7 +85,7 @@ const serviceCategories = {
   },
   analytics: {
     title: 'Analytics',
-    icon: <AnalyticsIcon />,
+    iconName: 'AnalyticsIcon',
     color: '#06b6d4',
     services: {
       google_analytics: 'Google Analytics 4',
@@ -93,7 +94,7 @@ const serviceCategories = {
   },
   book_platforms: {
     title: 'Book Platforms',
-    icon: <BookIcon />,
+    iconName: 'BookIcon',
     color: '#10b981',
     services: {
       amazon_kdp: 'Amazon KDP sales tracking',
@@ -102,7 +103,7 @@ const serviceCategories = {
   },
   email_marketing: {
     title: 'Email Marketing',
-    icon: <EmailIcon />,
+    iconName: 'EmailIcon',
     color: '#f59e0b',
     services: {
       mailchimp: 'Mailchimp email campaigns',
@@ -111,7 +112,7 @@ const serviceCategories = {
   },
   author_settings: {
     title: 'Author Settings',
-    icon: <SecurityIcon />,
+    iconName: 'SecurityIcon',
     color: '#6366f1',
     services: {
       author_email: 'Author email for reports and notifications',
@@ -136,7 +137,18 @@ const APISettings: React.FC = () => {
     message: string;
     severity: 'success' | 'error' | 'warning' | 'info';
   }>({ open: false, message: '', severity: 'info' });
-  const [testingConnection, setTestingConnection] = useState(false);
+  // Helper function to get icon component
+  const getIconComponent = (iconName: string) => {
+    const iconMap: { [key: string]: React.ReactElement } = {
+      CloudIcon: <CloudIcon />,
+      ShareIcon: <ShareIcon />,
+      AnalyticsIcon: <AnalyticsIcon />,
+      BookIcon: <BookIcon />,
+      EmailIcon: <EmailIcon />,
+      SecurityIcon: <SecurityIcon />
+    };
+    return iconMap[iconName] || <SettingsIcon />;
+  };
 
   const loadAPIStatus = useCallback(async () => {
     try {
@@ -406,7 +418,7 @@ const APISettings: React.FC = () => {
         <Accordion key={categoryKey} defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Box display="flex" alignItems="center" gap={2}>
-              {React.cloneElement(category.icon, { sx: { color: category.color } })}
+              {React.cloneElement(getIconComponent(category.iconName), { sx: { color: category.color } })}
               <Typography variant="h6">{category.title}</Typography>
               <Chip
                 size="small"
