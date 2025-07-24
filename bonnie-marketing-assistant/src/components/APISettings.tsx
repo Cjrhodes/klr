@@ -137,6 +137,7 @@ const APISettings: React.FC = () => {
     message: string;
     severity: 'success' | 'error' | 'warning' | 'info';
   }>({ open: false, message: '', severity: 'info' });
+  const [testingConnection, setTestingConnection] = useState(false);
   // Helper function to get icon component
   const getIconComponent = (iconName: string) => {
     const iconMap: { [key: string]: React.ReactElement } = {
