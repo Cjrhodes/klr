@@ -58,6 +58,68 @@ interface APIConfiguration {
   additionalConfig?: Record<string, any>;
 }
 
+// Move serviceCategories outside the component to prevent unnecessary re-renders
+const serviceCategories = {
+  ai_services: {
+    title: 'AI Services',
+    icon: <CloudIcon />,
+    color: '#8b5cf6',
+    services: {
+      anthropic: 'Claude AI for content generation',
+      openai: 'DALL-E 3 for image generation'
+    }
+  },
+  social_media: {
+    title: 'Social Media',
+    icon: <ShareIcon />,
+    color: '#f97316',
+    services: {
+      instagram: 'Instagram Business API',
+      facebook: 'Facebook Graph API',
+      twitter: 'Twitter API v2',
+      tiktok: 'TikTok for Business API',
+      threads: 'Threads API',
+      bluesky: 'Bluesky API'
+    }
+  },
+  analytics: {
+    title: 'Analytics',
+    icon: <AnalyticsIcon />,
+    color: '#06b6d4',
+    services: {
+      google_analytics: 'Google Analytics 4',
+      facebook_pixel: 'Facebook Pixel tracking'
+    }
+  },
+  book_platforms: {
+    title: 'Book Platforms',
+    icon: <BookIcon />,
+    color: '#10b981',
+    services: {
+      amazon_kdp: 'Amazon KDP sales tracking',
+      bookbub: 'BookBub advertising API'
+    }
+  },
+  email_marketing: {
+    title: 'Email Marketing',
+    icon: <EmailIcon />,
+    color: '#f59e0b',
+    services: {
+      mailchimp: 'Mailchimp email campaigns',
+      convertkit: 'ConvertKit email automation'
+    }
+  },
+  author_settings: {
+    title: 'Author Settings',
+    icon: <SecurityIcon />,
+    color: '#6366f1',
+    services: {
+      author_email: 'Author email for reports and notifications',
+      notification_preferences: 'Email notification settings'
+    }
+  }
+};
+
 const APISettings: React.FC = () => {
   const [services, setServices] = useState<APIService[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,67 +137,6 @@ const APISettings: React.FC = () => {
     severity: 'success' | 'error' | 'warning' | 'info';
   }>({ open: false, message: '', severity: 'info' });
   const [testingConnection, setTestingConnection] = useState(false);
-
-  const serviceCategories = {
-    ai_services: {
-      title: 'AI Services',
-      icon: <CloudIcon />,
-      color: '#8b5cf6',
-      services: {
-        anthropic: 'Claude AI for content generation',
-        openai: 'DALL-E 3 for image generation'
-      }
-    },
-    social_media: {
-      title: 'Social Media',
-      icon: <ShareIcon />,
-      color: '#f97316',
-      services: {
-        instagram: 'Instagram Business API',
-        facebook: 'Facebook Graph API',
-        twitter: 'Twitter API v2',
-        tiktok: 'TikTok for Business API',
-        threads: 'Threads API',
-        bluesky: 'Bluesky API'
-      }
-    },
-    analytics: {
-      title: 'Analytics',
-      icon: <AnalyticsIcon />,
-      color: '#06b6d4',
-      services: {
-        google_analytics: 'Google Analytics 4',
-        facebook_pixel: 'Facebook Pixel tracking'
-      }
-    },
-    book_platforms: {
-      title: 'Book Platforms',
-      icon: <BookIcon />,
-      color: '#10b981',
-      services: {
-        amazon_kdp: 'Amazon KDP sales tracking',
-        bookbub: 'BookBub advertising API'
-      }
-    },
-    email_marketing: {
-      title: 'Email Marketing',
-      icon: <EmailIcon />,
-      color: '#f59e0b',
-      services: {
-        mailchimp: 'Mailchimp email campaigns',
-        convertkit: 'ConvertKit email automation'
-      }
-    },
-    author_settings: {
-      title: 'Author Settings',
-      icon: <SecurityIcon />,
-      color: '#6366f1',
-      services: {
-        author_email: 'Author email for reports and notifications',
-        notification_preferences: 'Email notification settings'
-      }
-    }
-  };
 
   const loadAPIStatus = useCallback(async () => {
     try {
@@ -174,7 +175,7 @@ const APISettings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [serviceCategories]);
+  }, []); // Now the dependency array can be empty since serviceCategories is outside the component
 
   useEffect(() => {
     loadAPIStatus();
