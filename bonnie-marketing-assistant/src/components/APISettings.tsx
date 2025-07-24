@@ -174,7 +174,7 @@ const APISettings: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [serviceCategories]);
 
   useEffect(() => {
     loadAPIStatus();
