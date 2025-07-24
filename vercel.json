@@ -5,8 +5,8 @@
       "src": "bonnie-marketing-assistant/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "cd bonnie-marketing-assistant && npm run build",
-        "distDir": "bonnie-marketing-assistant/build"
+        "buildCommand": "cd bonnie-marketing-assistant && npm run build && cp -r build/* ../public/",
+        "distDir": "public"
       }
     },
     {
@@ -26,7 +26,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/bonnie-marketing-assistant/build/$1"
+      "dest": "/$1"
     }
   ],
   "installCommand": "cd bonnie-marketing-assistant && npm install"
