@@ -63,7 +63,7 @@ const Dashboard: React.FC = () => {
           <Tab label="🤖 AI Assistant" {...a11yProps(2)} />
           <Tab label="✍️ Create Posts" {...a11yProps(3)} />
           <Tab label="📅 Schedule & Calendar" {...a11yProps(4)} />
-          <Tab label="⚙️ API Settings" {...a11yProps(5)} />
+          <Tab label="⚙️ Settings" {...a11yProps(5)} />
         </Tabs>
       </Box>
 

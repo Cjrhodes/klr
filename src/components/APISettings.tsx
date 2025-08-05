@@ -60,57 +60,9 @@ const serviceCategories = {
     iconName: 'CloudIcon',
     color: '#8b5cf6',
     services: {
-      anthropic: 'Claude AI for content generation',
-      openai: 'DALL-E 3 for image generation'
-    }
-  },
-  social_media: {
-    title: 'Social Media',
-    iconName: 'ShareIcon',
-    color: '#f97316',
-    services: {
-      instagram: 'Instagram Business API',
-      facebook: 'Facebook Graph API',
-      twitter: 'Twitter API v2',
-      tiktok: 'TikTok for Business API',
-      threads: 'Threads API',
-      bluesky: 'Bluesky API'
-    }
-  },
-  analytics: {
-    title: 'Analytics',
-    iconName: 'AnalyticsIcon',
-    color: '#06b6d4',
-    services: {
-      google_analytics: 'Google Analytics 4',
-      facebook_pixel: 'Facebook Pixel tracking'
-    }
-  },
-  book_platforms: {
-    title: 'Book Platforms',
-    iconName: 'BookIcon',
-    color: '#10b981',
-    services: {
-      amazon_kdp: 'Amazon KDP sales tracking',
-      bookbub: 'BookBub advertising API'
-    }
-  },
-  email_marketing: {
-    title: 'Email Marketing',
-    iconName: 'EmailIcon',
-    color: '#f59e0b',
-    services: {
-      mailchimp: 'Mailchimp email campaigns',
-      convertkit: 'ConvertKit email automation'
-    }
-  },
-  author_settings: {
-    title: 'Author Settings',
-    iconName: 'SecurityIcon',
-    color: '#6366f1',
-    services: {
-      author_email: 'Author email for reports and notifications',
-      notification_preferences: 'Email notification settings'
+      'Claude AI': 'Anthropic\'s Claude for intelligent conversations and content generation',
+      'GPT-4': 'OpenAI\'s GPT-4 for advanced text generation and analysis',
+      'DALL-E 3': 'OpenAI\'s DALL-E 3 for AI-powered image generation'
     }
   }
 };
@@ -214,7 +166,7 @@ const APISettings: React.FC = () => {
         showSnackbar(`Configuration failed: ${error}`, 'error');
       }
     } else {
-      showSnackbar('Please enter an API key', 'error');
+      showSnackbar('Please enter a key', 'error');
     }
     
     setTestingConnection(false);
@@ -225,22 +177,22 @@ const APISettings: React.FC = () => {
     switch (serviceName) {
       case 'Claude AI':
         if (!apiKey.startsWith('sk-ant-')) {
-          throw new Error('Invalid Claude API key format');
+          throw new Error('Invalid Claude key format (should start with sk-ant-)');
         }
         break;
       case 'DALL-E 3':
         if (!apiKey.startsWith('sk-')) {
-          throw new Error('Invalid OpenAI API key format');
+          throw new Error('Invalid OpenAI key format (should start with sk-)');
         }
         break;
       case 'GPT-4':
         if (!apiKey.startsWith('sk-')) {
-          throw new Error('Invalid OpenAI API key format');
+          throw new Error('Invalid OpenAI key format (should start with sk-)');
         }
         break;
       default:
         if (apiKey.length < 10) {
-          throw new Error('API key seems too short');
+          throw new Error('Key seems too short');
         }
     }
     
@@ -258,7 +210,7 @@ const APISettings: React.FC = () => {
       const apiKey = localStorage.getItem(keyName);
       
       if (!apiKey) {
-        throw new Error('No API key configured');
+        throw new Error('No key configured');
       }
       
       await testAPIKey(serviceName, apiKey);
@@ -392,7 +344,7 @@ const APISettings: React.FC = () => {
           <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
             <Box display="flex" alignItems="center" gap={2}>
               <SecurityIcon sx={{ color: '#8b5cf6' }} />
-              <Typography variant="h5">API Configuration</Typography>
+              <Typography variant="h5">Settings</Typography>
             </Box>
             <Button
               variant="outlined"
@@ -405,7 +357,7 @@ const APISettings: React.FC = () => {
           </Box>
           
           <Alert severity="info" sx={{ mb: 2 }}>
-            Configure your API keys to enable full functionality of the Marketing Assistant. 
+            Configure your service keys to enable full functionality of the Marketing Assistant. 
             All keys are encrypted and stored securely.
           </Alert>
 
@@ -539,7 +491,7 @@ const APISettings: React.FC = () => {
             {renderAdditionalConfigFields()}
             
             <Alert severity="warning" sx={{ mt: 2 }}>
-              API keys are encrypted and stored securely. Never share your API keys with anyone.
+              Service keys are encrypted and stored securely. Never share your keys with anyone.
             </Alert>
           </Box>
         </DialogContent>
