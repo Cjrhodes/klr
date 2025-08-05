@@ -41,7 +41,6 @@ import {
   Visibility,
   VisibilityOff
 } from '@mui/icons-material';
-import API_ENDPOINTS from '../config/api';
 
 interface APIService {
   name: string;
@@ -52,11 +51,6 @@ interface APIService {
   configured: boolean;
 }
 
-interface APIConfiguration {
-  service: string;
-  apiKey: string;
-  additionalConfig?: Record<string, any>;
-}
 
 // Move serviceCategories outside the component to prevent unnecessary re-renders
 // Use icon names instead of JSX elements to avoid dependency issues
@@ -152,43 +146,30 @@ const APISettings: React.FC = () => {
   };
 
   const loadAPIStatus = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(API_ENDPOINTS.STATUS);
-      const data = await response.json();
-      
-      if (data.success) {
-        const servicesArray: APIService[] = [];
+    setLoading(true);
+    
+    // Use demo data instead of API call
+    const servicesArray: APIService[] = [];
+    
+    Object.entries(serviceCategories).forEach(([category, categoryInfo]) => {
+      Object.entries(categoryInfo.services).forEach(([serviceName, description]) => {
+        // Mock some services as connected for demo
+        const mockConnected = ['Claude AI', 'DALL-E 3'].includes(serviceName);
         
-        Object.entries(serviceCategories).forEach(([category, categoryInfo]) => {
-          Object.entries(categoryInfo.services).forEach(([serviceName, description]) => {
-            const serviceStatus = data.data[category]?.[serviceName] || {
-              enabled: false,
-              configured: false,
-              status: 'not_configured'
-            };
-            
-            servicesArray.push({
-              name: serviceName,
-              category,
-              description: description as string,
-              status: serviceStatus.status === 'ready' ? 'connected' : 
-                     serviceStatus.configured ? 'error' : 'disconnected',
-              enabled: serviceStatus.enabled,
-              configured: serviceStatus.configured
-            });
-          });
+        servicesArray.push({
+          name: serviceName,
+          category,
+          description: description as string,
+          status: mockConnected ? 'connected' : 'disconnected',
+          enabled: mockConnected,
+          configured: mockConnected
         });
-        
-        setServices(servicesArray);
-      }
-    } catch (error) {
-      console.error('Error loading API status:', error);
-      showSnackbar('Error loading API status', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, []); // Now the dependency array can be empty since serviceCategories is outside the component
+      });
+    });
+    
+    setServices(servicesArray);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     loadAPIStatus();
@@ -202,38 +183,27 @@ const APISettings: React.FC = () => {
   };
 
   const handleSaveConfiguration = async () => {
-    try {
-      setTestingConnection(true);
+    setTestingConnection(true);
+    
+    // Simulate API configuration in demo mode
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
+    
+    if (apiKey.trim()) {
+      // Mock successful configuration
+      showSnackbar(`${configDialog.service} configured successfully (Demo Mode)`, 'success');
+      setConfigDialog({ open: false, service: '', category: '' });
       
-      const configuration: APIConfiguration = {
-        service: configDialog.service,
-        apiKey: apiKey,
-        additionalConfig: additionalConfig
-      };
-
-      const response = await fetch(API_ENDPOINTS.CONFIGURE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(configuration)
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        showSnackbar(`${configDialog.service} configured successfully`, 'success');
-        setConfigDialog({ open: false, service: '', category: '' });
-        await loadAPIStatus(); // Reload status
-      } else {
-        showSnackbar(`Configuration failed: ${data.error}`, 'error');
-      }
-    } catch (error) {
-      console.error('Error configuring service:', error);
-      showSnackbar('Error configuring service', 'error');
-    } finally {
-      setTestingConnection(false);
+      // Update services array to show as connected
+      setServices(prev => prev.map(service => 
+        service.name === configDialog.service 
+          ? { ...service, status: 'connected', enabled: true, configured: true }
+          : service
+      ));
+    } else {
+      showSnackbar('Please enter an API key', 'error');
     }
+    
+    setTestingConnection(false);
   };
 
   const handleTestConnection = async (serviceName: string) => {

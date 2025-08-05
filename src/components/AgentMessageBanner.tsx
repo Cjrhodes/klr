@@ -26,7 +26,6 @@ import {
   TrendingUp as TrendingUpIcon,
   Campaign as CampaignIcon
 } from '@mui/icons-material';
-import API_ENDPOINTS from '../config/api';
 
 interface AgentTask {
   id: string;
@@ -78,18 +77,6 @@ const AgentMessageBanner: React.FC = () => {
     return () => clearInterval(interval);
   }, [loadAgentMessage]);
 
-  const generateAgentMessage = (agentData: any): string => {
-    const timeOfDay = new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening';
-    
-    const messages = [
-      `Good ${timeOfDay}, Bonnie! I've been analyzing your marketing performance overnight. Here's what needs your attention today.`,
-      `Hello Bonnie! Your marketing team is ready to drive more sales for The Dark Road. I've prioritized the most impactful tasks.`,
-      `Welcome back! I've coordinated with all agents and identified key opportunities to boost your horror book's visibility today.`,
-      `Good ${timeOfDay}! The marketing machine is running smoothly. Here are the strategic priorities to maximize your book's reach.`
-    ];
-    
-    return messages[Math.floor(Math.random() * messages.length)];
-  };
 
   const generateCurrentTasks = (): AgentTask[] => {
     return [
@@ -134,14 +121,6 @@ const AgentMessageBanner: React.FC = () => {
     ];
   };
 
-  const generateRecommendations = (): string[] => {
-    return [
-      "Configure your email in API settings to enable automated reports",
-      "Instagram engagement is up 23% - consider increasing post frequency",
-      "Horror book hashtags trending - perfect time for themed content",
-      "Weekend posts perform 40% better - schedule accordingly"
-    ];
-  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
