@@ -54,43 +54,21 @@ const AgentMessageBanner: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const loadAgentMessage = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      // Simulate API call - replace with actual endpoint  
-      const response = await fetch(API_ENDPOINTS.AGENTS_STATUS);
-      const data = await response.json();
-      
-      if (data.success) {
-        // Generate dynamic agent message based on current status
-        const mockMessage: AgentMessage = {
-          message: generateAgentMessage(data.data),
-          tasks: generateCurrentTasks(),
-          recommendations: generateRecommendations(),
-          metrics: {
-            completedToday: 8,
-            pendingTasks: 12,
-            campaignsActive: 3
-          }
-        };
-        setAgentMessage(mockMessage);
+    setLoading(true);
+    
+    // Use demo data instead of API call
+    setAgentMessage({
+      message: "Good morning! I'm coordinating your marketing efforts for Kathleen Rhodes. We have several high-priority tasks to drive your book sales this week.",
+      tasks: generateCurrentTasks(),
+      recommendations: ["Configure API keys to enable full AI automation", "Review pending social media posts", "Check campaign performance metrics"],
+      metrics: {
+        completedToday: 5,
+        pendingTasks: 8,
+        campaignsActive: 2
       }
-    } catch (error) {
-      console.error('Error loading agent message:', error);
-      // Fallback message
-      setAgentMessage({
-        message: "Good morning, Bonnie! I'm coordinating your marketing efforts for The Dark Road. We have several high-priority tasks to drive your book sales this week.",
-        tasks: generateCurrentTasks(),
-        recommendations: ["Configure API keys to enable full AI automation", "Review pending social media posts", "Check campaign performance metrics"],
-        metrics: {
-          completedToday: 5,
-          pendingTasks: 8,
-          campaignsActive: 2
-        }
-      });
-    } finally {
-      setLoading(false);
-    }
+    });
+    
+    setLoading(false);
   }, []);
 
   useEffect(() => {
