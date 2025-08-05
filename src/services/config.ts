@@ -1,29 +1,36 @@
+// Helper function to get API key from localStorage with fallback to env
+const getAPIKey = (localStorageKey: string, envKey?: string): string => {
+  const storedKey = localStorage.getItem(localStorageKey);
+  if (storedKey) return storedKey;
+  return envKey ? (process.env[envKey] || '') : '';
+};
+
 // API Configuration
 export const API_CONFIG = {
   // AI Services
   anthropic: {
-    apiKey: process.env.REACT_APP_ANTHROPIC_API_KEY || '',
+    get apiKey() { return getAPIKey('apiKey_Claude_AI', 'REACT_APP_ANTHROPIC_API_KEY'); },
     baseUrl: 'https://api.anthropic.com/v1',
   },
   openai: {
-    apiKey: process.env.REACT_APP_OPENAI_API_KEY || '',
+    get apiKey() { return getAPIKey('apiKey_GPT-4', 'REACT_APP_OPENAI_API_KEY') || getAPIKey('apiKey_DALL-E_3', 'REACT_APP_OPENAI_API_KEY'); },
     baseUrl: 'https://api.openai.com/v1',
   },
 
   // Social Media APIs
   instagram: {
-    accessToken: process.env.REACT_APP_INSTAGRAM_ACCESS_TOKEN || '',
+    get accessToken() { return getAPIKey('apiKey_Instagram', 'REACT_APP_INSTAGRAM_ACCESS_TOKEN'); },
     baseUrl: 'https://graph.instagram.com/v17.0',
   },
   facebook: {
-    accessToken: process.env.REACT_APP_FACEBOOK_ACCESS_TOKEN || '',
+    get accessToken() { return getAPIKey('apiKey_Facebook', 'REACT_APP_FACEBOOK_ACCESS_TOKEN'); },
     baseUrl: 'https://graph.facebook.com/v17.0',
   },
   twitter: {
-    apiKey: process.env.REACT_APP_TWITTER_API_KEY || '',
-    apiSecret: process.env.REACT_APP_TWITTER_API_SECRET || '',
-    accessToken: process.env.REACT_APP_TWITTER_ACCESS_TOKEN || '',
-    accessSecret: process.env.REACT_APP_TWITTER_ACCESS_SECRET || '',
+    get apiKey() { return getAPIKey('apiKey_Twitter_/_X', 'REACT_APP_TWITTER_API_KEY'); },
+    get apiSecret() { return getAPIKey('apiSecret_Twitter_/_X', 'REACT_APP_TWITTER_API_SECRET'); },
+    get accessToken() { return getAPIKey('accessToken_Twitter_/_X', 'REACT_APP_TWITTER_ACCESS_TOKEN'); },
+    get accessSecret() { return getAPIKey('accessSecret_Twitter_/_X', 'REACT_APP_TWITTER_ACCESS_SECRET'); },
     baseUrl: 'https://api.twitter.com/2',
   },
   tiktok: {
@@ -102,8 +109,19 @@ export const isConfigured = (service: keyof typeof API_CONFIG): boolean => {
   const config = API_CONFIG[service];
   if (!config) return false;
   
-  // Check if any required key is missing
-  return Object.values(config).some(value => value !== '');
+  // Check if any required key is configured
+  return Object.entries(config).some(([key, value]) => {
+    if (key === 'baseUrl') return false; // Skip baseUrl
+    if (typeof value === 'function') return false; // Skip getter functions
+    if (typeof value === 'string') return value !== '';
+    // For getters, we need to call them
+    try {
+      const actualValue = (config as any)[key];
+      return actualValue && actualValue !== '';
+    } catch {
+      return false;
+    }
+  });
 };
 
 // Helper function to get missing configurations
