@@ -66,16 +66,16 @@ const serviceCategories = {
     }
   },
   social_media: {
-    title: 'Social Media Platforms',
+    title: 'Social Media Accounts',
     iconName: 'ShareIcon',
     color: '#1877F2',
     services: {
-      'Instagram': 'Connect your Instagram Business account for posting and analytics',
-      'Facebook': 'Connect your Facebook Page for posting and promotion',
-      'Twitter / X': 'Connect your Twitter/X account for microblogging',
-      'Threads': 'Connect your Threads account for text-based social sharing',
-      'TikTok': 'Connect TikTok for video content and trends',
-      'Bluesky': 'Connect Bluesky for decentralized social networking'
+      'Instagram': 'Enter your Instagram username/handle',
+      'Facebook': 'Enter your Facebook page name',
+      'Twitter / X': 'Enter your Twitter/X handle',
+      'Threads': 'Enter your Threads username',
+      'TikTok': 'Enter your TikTok username',
+      'Bluesky': 'Enter your Bluesky handle'
     }
   },
   unified_social: {
@@ -123,14 +123,14 @@ const APISettings: React.FC = () => {
   const loadAPIStatus = useCallback(async () => {
     setLoading(true);
     
-    // Load actual API key status from localStorage
+    // Load actual API key/account info status from localStorage
     const servicesArray: APIService[] = [];
     
     Object.entries(serviceCategories).forEach(([category, categoryInfo]) => {
       Object.entries(categoryInfo.services).forEach(([serviceName, description]) => {
-        // Check if API key exists in localStorage
-        const apiKey = localStorage.getItem(`apiKey_${serviceName.replace(/\s+/g, '_')}`);
-        const isConfigured = !!(apiKey && apiKey.length > 0);
+        // Check if data exists in localStorage (API key or account info)
+        const data = localStorage.getItem(`apiKey_${serviceName.replace(/\s+/g, '_')}`);
+        const isConfigured = !!(data && data.length > 0);
         
         servicesArray.push({
           name: serviceName,
@@ -173,10 +173,11 @@ const APISettings: React.FC = () => {
           localStorage.setItem(configName, JSON.stringify(additionalConfig));
         }
         
-        // Test the API key (basic validation)
+        // Test/validate the input (API key or username)
         await testAPIKey(configDialog.service, apiKey.trim());
         
-        showSnackbar(`${configDialog.service} configured successfully!`, 'success');
+        const isSocialMedia = ['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(configDialog.service);
+        showSnackbar(`${configDialog.service} ${isSocialMedia ? 'account info saved' : 'configured'} successfully!`, 'success');
         setConfigDialog({ open: false, service: '', category: '' });
         
         // Update services array to show as connected
@@ -189,77 +190,101 @@ const APISettings: React.FC = () => {
         showSnackbar(`Configuration failed: ${error}`, 'error');
       }
     } else {
-      showSnackbar('Please enter a key', 'error');
+      const isSocialMedia = ['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(configDialog.service);
+      showSnackbar(`Please enter ${isSocialMedia ? 'your username/handle' : 'an API key'}`, 'error');
     }
     
     setTestingConnection(false);
   };
 
-  const testAPIKey = async (serviceName: string, apiKey: string): Promise<void> => {
+  const testAPIKey = async (serviceName: string, input: string): Promise<void> => {
     // Basic validation for different services
     switch (serviceName) {
       case 'Claude AI':
-        if (!apiKey.startsWith('sk-ant-')) {
+        if (!input.startsWith('sk-ant-')) {
           throw new Error('Invalid Claude key format (should start with sk-ant-)');
         }
         break;
       case 'DALL-E 3':
-        if (!apiKey.startsWith('sk-')) {
+        if (!input.startsWith('sk-')) {
           throw new Error('Invalid OpenAI key format (should start with sk-)');
         }
         break;
       case 'GPT-4':
-        if (!apiKey.startsWith('sk-')) {
+        if (!input.startsWith('sk-')) {
           throw new Error('Invalid OpenAI key format (should start with sk-)');
         }
         break;
       case 'Ayrshare':
         // Ayrshare API keys are typically formatted as XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX
-        if (!/^[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}$/.test(apiKey)) {
+        if (!/^[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}-[A-Z0-9]{8}$/.test(input)) {
           throw new Error('Invalid Ayrshare key format (should be XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX)');
         }
         break;
       case 'Instagram':
+        // Instagram username validation
+        if (!/^[a-zA-Z0-9._]{1,30}$/.test(input)) {
+          throw new Error('Invalid Instagram username format (letters, numbers, dots, underscores only)');
+        }
+        break;
       case 'Facebook':
-      case 'Threads':
-        // Meta platform tokens are typically long alphanumeric strings
-        if (apiKey.length < 50) {
-          throw new Error('Meta platform tokens are typically longer than 50 characters');
+        // Facebook page name validation (more flexible)
+        if (input.length < 2 || input.length > 50) {
+          throw new Error('Facebook page name should be 2-50 characters');
         }
         break;
       case 'Twitter / X':
-        // Twitter API keys vary in format
-        if (apiKey.length < 25) {
-          throw new Error('Twitter API keys are typically longer than 25 characters');
+        // Twitter handle validation
+        if (!/^@?[a-zA-Z0-9_]{1,15}$/.test(input)) {
+          throw new Error('Invalid Twitter handle format (@username, 1-15 characters)');
+        }
+        break;
+      case 'Threads':
+        // Threads username validation (similar to Instagram)
+        if (!/^[a-zA-Z0-9._]{1,30}$/.test(input)) {
+          throw new Error('Invalid Threads username format (letters, numbers, dots, underscores only)');
+        }
+        break;
+      case 'TikTok':
+        // TikTok username validation
+        if (!/^@?[a-zA-Z0-9._]{2,24}$/.test(input)) {
+          throw new Error('Invalid TikTok username format (@username, 2-24 characters)');
+        }
+        break;
+      case 'Bluesky':
+        // Bluesky handle validation (can be domain-like or simple handle)
+        if (!/^@?[a-zA-Z0-9.-]+$/.test(input) || input.length < 2 || input.length > 50) {
+          throw new Error('Invalid Bluesky handle format');
         }
         break;
       default:
-        if (apiKey.length < 10) {
-          throw new Error('Key seems too short');
+        if (input.length < 2) {
+          throw new Error('Input seems too short');
         }
     }
     
-    // Add a small delay to simulate testing
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Add a small delay to simulate validation
+    await new Promise(resolve => setTimeout(resolve, 500));
   };
 
   const handleTestConnection = async (serviceName: string) => {
     try {
       setTestingConnection(true);
-      showSnackbar(`Testing connection to ${serviceName}...`, 'info');
+      const isSocialMedia = ['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(serviceName);
+      showSnackbar(`${isSocialMedia ? 'Validating' : 'Testing connection to'} ${serviceName}...`, 'info');
       
-      // Get stored API key
+      // Get stored data (API key or account info)
       const keyName = `apiKey_${serviceName.replace(/\s+/g, '_')}`;
-      const apiKey = localStorage.getItem(keyName);
+      const data = localStorage.getItem(keyName);
       
-      if (!apiKey) {
-        throw new Error('No key configured');
+      if (!data) {
+        throw new Error(isSocialMedia ? 'No account info configured' : 'No key configured');
       }
       
-      await testAPIKey(serviceName, apiKey);
-      showSnackbar(`Connection to ${serviceName} successful`, 'success');
+      await testAPIKey(serviceName, data);
+      showSnackbar(`${isSocialMedia ? 'Account info validated' : `Connection to ${serviceName} successful`}`, 'success');
     } catch (error) {
-      showSnackbar(`Connection test failed: ${error}`, 'error');
+      showSnackbar(`${['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(serviceName) ? 'Validation' : 'Connection test'} failed: ${error}`, 'error');
     } finally {
       setTestingConnection(false);
     }
@@ -295,24 +320,9 @@ const APISettings: React.FC = () => {
     const service = configDialog.service;
     const fields: Array<{ key: string; label: string; type?: string; required?: boolean }> = [];
 
-    // Define additional config fields for each service
+    // Social media accounts don't need additional config fields
+    // since they just need the username/handle in the main field
     switch (service) {
-      case 'Facebook':
-        fields.push({ key: 'page_id', label: 'Page ID', required: true });
-        break;
-      case 'Instagram':
-        fields.push({ key: 'business_account_id', label: 'Business Account ID', required: true });
-        break;
-      case 'Twitter / X':
-        fields.push(
-          { key: 'api_secret', label: 'API Secret', type: 'password', required: true },
-          { key: 'access_token', label: 'Access Token', required: true },
-          { key: 'access_secret', label: 'Access Token Secret', type: 'password', required: true }
-        );
-        break;
-      case 'Bluesky':
-        fields.push({ key: 'identifier', label: 'Bluesky Identifier (Handle or Email)', required: true });
-        break;
       case 'google_analytics':
         fields.push({ key: 'measurement_id', label: 'Measurement ID', required: true });
         break;
@@ -403,8 +413,9 @@ const APISettings: React.FC = () => {
           </Box>
           
           <Alert severity="info" sx={{ mb: 2 }}>
-            Configure your service keys to enable full functionality of the Marketing Assistant. 
-            All keys are encrypted and stored securely.
+            Set up your services: Configure Ayrshare API key for unified social media posting, 
+            add your social media account handles for reference, and set up other service keys.
+            All data is encrypted and stored securely.
           </Alert>
 
           <Box display="flex" gap={2} flexWrap="wrap">
@@ -514,30 +525,67 @@ const APISettings: React.FC = () => {
         </DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 1 }}>
-            <TextField
-              label="API Key"
-              type={showApiKey ? 'text' : 'password'}
-              fullWidth
-              margin="normal"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              required
-              InputProps={{
-                endAdornment: (
-                  <Button
-                    onClick={() => setShowApiKey(!showApiKey)}
-                    size="small"
-                  >
-                    {showApiKey ? <VisibilityOff /> : <Visibility />}
-                  </Button>
-                )
-              }}
-            />
+            {(() => {
+              const isSocialMedia = ['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(configDialog.service);
+              const isAryshare = configDialog.service === 'Ayrshare';
+              
+              if (isSocialMedia) {
+                const placeholders: { [key: string]: string } = {
+                  'Instagram': '@username or username',
+                  'Facebook': 'Your page name',
+                  'Twitter / X': '@username',
+                  'Threads': '@username',
+                  'TikTok': '@username',
+                  'Bluesky': '@username.bsky.social or custom domain'
+                };
+                
+                return (
+                  <TextField
+                    label={`${configDialog.service} Username/Handle`}
+                    type="text"
+                    fullWidth
+                    margin="normal"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    required
+                    placeholder={placeholders[configDialog.service]}
+                    helperText="Enter your account username or handle (no API key needed)"
+                  />
+                );
+              } else {
+                return (
+                  <TextField
+                    label={isAryshare ? 'Ayrshare API Key' : 'API Key'}
+                    type={showApiKey ? 'text' : 'password'}
+                    fullWidth
+                    margin="normal"
+                    value={apiKey}
+                    onChange={(e) => setApiKey(e.target.value)}
+                    required
+                    placeholder={isAryshare ? 'XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX' : ''}
+                    helperText={isAryshare ? 'Get your API key from Ayrshare dashboard after connecting your social accounts' : ''}
+                    InputProps={{
+                      endAdornment: (
+                        <Button
+                          onClick={() => setShowApiKey(!showApiKey)}
+                          size="small"
+                        >
+                          {showApiKey ? <VisibilityOff /> : <Visibility />}
+                        </Button>
+                      )
+                    }}
+                  />
+                );
+              }
+            })()}
             
             {renderAdditionalConfigFields()}
             
-            <Alert severity="warning" sx={{ mt: 2 }}>
-              Service keys are encrypted and stored securely. Never share your keys with anyone.
+            <Alert severity="info" sx={{ mt: 2 }}>
+              {['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(configDialog.service) 
+                ? 'Account information is stored locally for reference. Posting is handled through Ayrshare - make sure to connect your accounts there first.'
+                : 'API keys are encrypted and stored securely. Never share your keys with anyone.'
+              }
             </Alert>
           </Box>
         </DialogContent>
@@ -554,7 +602,10 @@ const APISettings: React.FC = () => {
             disabled={!apiKey || testingConnection}
             startIcon={testingConnection ? <CircularProgress size={16} /> : null}
           >
-            {testingConnection ? 'Testing...' : 'Save & Test'}
+            {testingConnection 
+              ? (['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(configDialog.service) ? 'Validating...' : 'Testing...')
+              : (['Instagram', 'Facebook', 'Twitter / X', 'Threads', 'TikTok', 'Bluesky'].includes(configDialog.service) ? 'Save & Validate' : 'Save & Test')
+            }
           </Button>
         </DialogActions>
       </Dialog>
